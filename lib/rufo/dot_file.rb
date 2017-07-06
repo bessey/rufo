@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 class Rufo::DotFile
   def initialize
     @cache = {}
