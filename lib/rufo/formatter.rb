@@ -411,7 +411,6 @@ class Rufo::Formatter
     when :@tstring_content
       # [:@tstring_content, "hello ", [1, 1]]
       heredoc, tilde = @current_heredoc
-      column = node[2][0]
 
       # For heredocs with tilde we sometimes need to align the contents
       if heredoc && tilde && @last_was_newline
@@ -789,7 +788,7 @@ class Rufo::Formatter
 
     visit string1
 
-    has_backslash, first_space = skip_space_backslash
+    has_backslash, _ = skip_space_backslash
     if has_backslash
       write " \\"
       write_line
@@ -953,8 +952,6 @@ class Rufo::Formatter
   end
 
   def visit_assign_value(value)
-    base_column = @column
-
     first_space = current_token if space?
     has_slash_newline, _ = skip_space_backslash
 
@@ -1077,7 +1074,7 @@ class Rufo::Formatter
 
   def visit_call_with_receiver(node)
     # [:call, obj, :".", name]
-    _, obj, text, name = node
+    _, obj, _, name = node
 
     @dot_column = nil
     visit obj
@@ -1309,7 +1306,7 @@ class Rufo::Formatter
     #   :".",
     #   name
     #   [:args_add_block, [[:@int, "1", [1, 8]]], block]]
-    _, receiver, dot, name, args = node
+    _, receiver, _, name, args = node
 
     base_column = current_token_column
 
@@ -1463,7 +1460,7 @@ class Rufo::Formatter
       return
     end
 
-    closing_brace_token, index = find_closing_brace_token
+    closing_brace_token, _ = find_closing_brace_token
 
     # If the whole block fits into a single line, use braces
     if current_token_line == closing_brace_token[0][0]
@@ -2104,7 +2101,7 @@ class Rufo::Formatter
     # [:@ident, "bar", [1, 9]],
     # [:params, nil, nil, nil, nil, nil, nil, nil],
     # [:bodystmt, [[:void_stmt]], nil, nil, nil]]
-    _, receiver, period, name, params, body = node
+    _, receiver, _, name, params, body = node
 
     consume_keyword "def"
     consume_space
@@ -2602,7 +2599,7 @@ class Rufo::Formatter
     # (followed by `=`, though not included in this node)
     #
     # [:field, receiver, :".", name]
-    _, receiver, dot, name = node
+    _, receiver, _, name = node
 
     @dot_column = nil
     @original_dot_column = nil
@@ -2725,7 +2722,7 @@ class Rufo::Formatter
     brace = current_token_value == "{"
 
     if brace
-      closing_brace_token, index = find_closing_brace_token
+      closing_brace_token, _ = find_closing_brace_token
 
       # Check if the whole block fits into a single line
       if current_token_line == closing_brace_token[0][0]
@@ -3852,7 +3849,7 @@ class Rufo::Formatter
     i = @tokens.size - 1
     while i >= 0
       token = @tokens[i]
-      (line, column), kind = token
+      _, kind = token
       case kind
       when :on_lbrace, :on_tlambeg
         count += 1
@@ -3868,7 +3865,6 @@ class Rufo::Formatter
   def newline_follows_token(index)
     index -= 1
     while index >= 0
-      token = @tokens[index]
       case current_token_kind
       when :on_sp
         # OK
@@ -4019,7 +4015,7 @@ class Rufo::Formatter
     lines = @output.lines
 
     # Chunk elements that are in consecutive lines
-    chunks = chunk_while(elements) do |(l1, c1, i1, id1), (l2, c2, i2, id2)|
+    chunks = chunk_while(elements) do |(l1, _, i1, id1), (l2, _, i2, id2)|
       l1 + 1 == l2 && i1 == i2 && id1 == id2
     end
 
