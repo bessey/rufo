@@ -98,7 +98,11 @@ class Rufo::Command
   end
 
   def format(code, dir)
-    formatter = Rufo::Formatter.new(code)
+    formatter = if $DEBUG
+        Rufo::DebugFormatter.new(code)
+      else
+        Rufo::Formatter.new(code)
+      end
 
     dot_rufo = @dot_file.find_in(dir)
     if dot_rufo

@@ -9,11 +9,17 @@ def test_harness
 end
 
 Benchmark.ips do |x|
-  x.config(time: 15, warmup: 1)
+  x.config(time: 60, warmup: 5)
 
-  x.report("formatter.rb") { test_harness }
-  # TODO faster version ;)
-  # x.report("formatter.rb") { test_harness }
+  x.report("debug on ") do
+    $DEBUG = true
+    test_harness
+  end
+
+  x.report("debug off") do
+    $DEBUG = false
+    test_harness
+  end
 
   x.compare!
 end
@@ -29,6 +35,8 @@ puts "Finished, results are in #{output_file}"
 # NOTES
 
 # Warming up --------------------------------------
-#         formatter.rb     1.000  i/100ms
+#         debug on      1.000  i/100ms
+#         debug off     1.000  i/100ms
 # Calculating -------------------------------------
-#         formatter.rb      8.331  (±12.0%) i/s -    124.000  in  15.087705s
+#         debug on       8.467  (±11.8%) i/s -    502.000  in  60.105954s
+#         debug off      8.637  (±11.6%) i/s -    511.000  in  60.096254s

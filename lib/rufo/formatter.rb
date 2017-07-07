@@ -3334,19 +3334,11 @@ class Rufo::Formatter
   end
 
   def consume_keyword(value)
-    check :on_kw
-    if current_token_value != value
-      bug "Expected keyword #{value}, not #{current_token_value}"
-    end
     write value
     next_token
   end
 
   def consume_op(value)
-    check :on_op
-    if current_token_value != value
-      bug "Expected op #{value}, not #{current_token_value}"
-    end
     write value
     next_token
   end
@@ -3726,9 +3718,7 @@ class Rufo::Formatter
   end
 
   def check(kind)
-    if current_token_kind != kind
-      bug "Expected token #{kind}, not #{current_token_kind}"
-    end
+    # No-op
   end
 
   def bug(msg)
